@@ -1,0 +1,4 @@
+Hello from Claude Code!
+
+This is a test file to verify GitHub connection.
+Created on: 2026-01-18
