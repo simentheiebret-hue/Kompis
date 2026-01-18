@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Kompis",
+    "slug": "kompis-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#4A90E2"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kompis.app"
+    },
+    "android": {
+      "backgroundColor": "#4A90E2",
+      "package": "com.kompis.app"
+    },
+    "web": {}
+  }
+}
