@@ -1,46 +1,85 @@
-import React, { useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Animated,
-  Dimensions,
-  TextInput,
-  Modal,
-  RefreshControl,
-  Alert,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRef, useState } from 'react';
+import {
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useAuth } from './contexts/AuthContext';
+import type {
+  ActiveHelper,
+  AppStage,
+  Category,
+  Helper,
+  Job,
+  JobCategory,
+  TabType,
+  User,
+} from './types';
 
-const { height, width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
-const KompisApp = ({ userData }) => {
+interface KompisAppProps {
+  userData: User | null;
+}
+
+const KompisApp = ({ userData }: KompisAppProps) => {
   const { logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('findHelp'); // findHelp or marketplace
-  const [stage, setStage] = useState('main'); // main, searching, matched, active
-  const [selectedJob, setSelectedJob] = useState(null);
+  const [activeTab, setActiveTab] = useState<TabType>('findHelp');
+  const [stage, setStage] = useState<AppStage>('main');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showNewJob, setShowNewJob] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState<JobCategory>('all');
   const slideAnim = useRef(new Animated.Value(height * 0.7)).current;
 
-  const nearbyHelpers = [
-    { id: 1, name: 'Erik A.', rating: 4.9, distance: '2 min', lat: 59.920, lng: 10.750, vehicle: 'varebil' },
-    { id: 2, name: 'Sara M.', rating: 4.8, distance: '4 min', lat: 59.918, lng: 10.755, vehicle: 'personbil' },
-    { id: 3, name: 'Thomas B.', rating: 4.7, distance: '6 min', lat: 59.922, lng: 10.748, vehicle: 'varebil' },
+  const nearbyHelpers: Helper[] = [
+    {
+      id: 1,
+      name: 'Erik A.',
+      rating: 4.9,
+      distance: '2 min',
+      lat: 59.92,
+      lng: 10.75,
+      vehicle: 'varebil',
+    },
+    {
+      id: 2,
+      name: 'Sara M.',
+      rating: 4.8,
+      distance: '4 min',
+      lat: 59.918,
+      lng: 10.755,
+      vehicle: 'personbil',
+    },
+    {
+      id: 3,
+      name: 'Thomas B.',
+      rating: 4.7,
+      distance: '6 min',
+      lat: 59.922,
+      lng: 10.748,
+      vehicle: 'varebil',
+    },
   ];
 
-  const jobs = [
+  const jobs: Job[] = [
     {
       id: 1,
       title: 'Sofa til resirkulering',
-      description: 'Stor 3-seters sofa i god stand som må leveres på Haraldrud gjenvinningsstasjon. Trenger hjelp med å få den ned fra 2. etasje (ingen heis).',
+      description:
+        'Stor 3-seters sofa i god stand som må leveres på Haraldrud gjenvinningsstasjon. Trenger hjelp med å få den ned fra 2. etasje (ingen heis).',
       location: 'Grünerløkka',
       from: 'Thorvald Meyers gate 42',
       to: 'Haraldrud gjenvinningsstasjon',
@@ -58,7 +97,8 @@ const KompisApp = ({ userData }) => {
     {
       id: 2,
       title: 'Flyttekasser - 10 stk',
-      description: '10 flyttekasser og 2 små bokhyller. Alt er pakket og klart. Må fraktes fra Majorstuen til Frogner.',
+      description:
+        '10 flyttekasser og 2 små bokhyller. Alt er pakket og klart. Må fraktes fra Majorstuen til Frogner.',
       location: 'Majorstuen',
       from: 'Bogstadveien 15',
       to: 'Frognerveien 22',
@@ -76,7 +116,8 @@ const KompisApp = ({ userData }) => {
     {
       id: 3,
       title: 'Gammel komfyr',
-      description: 'Elektrisk komfyr som må til riktig gjenvinningsstasjon. Tung, trenger 2 personer eller en med utstyr.',
+      description:
+        'Elektrisk komfyr som må til riktig gjenvinningsstasjon. Tung, trenger 2 personer eller en med utstyr.',
       location: 'Tøyen',
       from: 'Tøyengata 5',
       to: 'Haraldrud gjenvinningsstasjon',
@@ -112,7 +153,8 @@ const KompisApp = ({ userData }) => {
     {
       id: 5,
       title: 'Diverse møbler',
-      description: 'Liten kommode, 2 stoler og en hylle. Alt er lett å bære. Til Fretex på Torshov.',
+      description:
+        'Liten kommode, 2 stoler og en hylle. Alt er lett å bære. Til Fretex på Torshov.',
       location: 'Frogner',
       from: 'Gabels gate 12',
       to: 'Fretex Torshov',
@@ -129,14 +171,14 @@ const KompisApp = ({ userData }) => {
     },
   ];
 
-  const categories = [
+  const categories: Category[] = [
     { id: 'all', label: 'Alle', emoji: '📦', color: '#3B82F6' },
     { id: 'furniture', label: 'Møbler', emoji: '🛋️', color: '#EF4444' },
     { id: 'moving', label: 'Flytting', emoji: '🏠', color: '#F59E0B' },
     { id: 'recycling', label: 'Resirkulering', emoji: '♻️', color: '#10B981' },
   ];
 
-  const activeHelper = {
+  const activeHelper: ActiveHelper = {
     name: 'Erik A.',
     rating: 4.9,
     phone: '+47 123 45 678',
@@ -146,9 +188,8 @@ const KompisApp = ({ userData }) => {
     photo: 'https://i.pravatar.cc/150?img=12',
   };
 
-  const filteredJobs = activeFilter === 'all' 
-    ? jobs 
-    : jobs.filter(job => job.category === activeFilter);
+  const filteredJobs =
+    activeFilter === 'all' ? jobs : jobs.filter((job) => job.category === activeFilter);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -174,7 +215,7 @@ const KompisApp = ({ userData }) => {
   };
 
   // Job Detail Modal
-  const JobModal = ({ job, onClose }) => (
+  const JobModal = ({ job, onClose }: { job: Job; onClose: () => void }) => (
     <Modal visible={true} animationType="slide" transparent={true}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -186,12 +227,13 @@ const KompisApp = ({ userData }) => {
 
           <ScrollView style={styles.modalScroll}>
             <Image source={{ uri: job.image }} style={styles.modalImage} />
-            
+
             <View style={styles.modalBody}>
               <View style={styles.jobHeader}>
                 <View style={styles.jobCategory}>
                   <Text style={styles.jobCategoryText}>
-                    {categories.find(c => c.id === job.category)?.emoji} {categories.find(c => c.id === job.category)?.label}
+                    {categories.find((c) => c.id === job.category)?.emoji}{' '}
+                    {categories.find((c) => c.id === job.category)?.label}
                   </Text>
                 </View>
                 <Text style={styles.jobTimeAgo}>{job.timeAgo} siden</Text>
@@ -203,7 +245,7 @@ const KompisApp = ({ userData }) => {
               <View style={styles.locationSection}>
                 <View style={styles.locationRow}>
                   <View style={styles.locationDot} />
-                  <View style={styles.locationText}>
+                  <View style={styles.locationTextContainer}>
                     <Text style={styles.locationLabel}>Henting</Text>
                     <Text style={styles.locationAddress}>{job.from}</Text>
                   </View>
@@ -211,7 +253,7 @@ const KompisApp = ({ userData }) => {
                 <View style={styles.locationLine} />
                 <View style={styles.locationRow}>
                   <View style={styles.locationDotEnd} />
-                  <View style={styles.locationText}>
+                  <View style={styles.locationTextContainer}>
                     <Text style={styles.locationLabel}>Levering</Text>
                     <Text style={styles.locationAddress}>{job.to}</Text>
                   </View>
@@ -286,12 +328,14 @@ const KompisApp = ({ userData }) => {
             <View style={styles.formSection}>
               <Text style={styles.formLabel}>Kategori</Text>
               <View style={styles.categoryGrid}>
-                {categories.filter(c => c.id !== 'all').map(cat => (
-                  <TouchableOpacity key={cat.id} style={styles.categoryOption}>
-                    <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
-                    <Text style={styles.categoryLabel}>{cat.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                {categories
+                  .filter((c) => c.id !== 'all')
+                  .map((cat) => (
+                    <TouchableOpacity key={cat.id} style={styles.categoryOption}>
+                      <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
+                      <Text style={styles.categoryLabel}>{cat.label}</Text>
+                    </TouchableOpacity>
+                  ))}
               </View>
             </View>
 
@@ -362,7 +406,10 @@ const KompisApp = ({ userData }) => {
             ) : (
               <View style={styles.profileAvatar}>
                 <Text style={styles.profileAvatarText}>
-                  {userData?.name?.split(' ').map(n => n[0]).join('') || 'TB'}
+                  {userData?.name
+                    ?.split(' ')
+                    .map((n) => n[0])
+                    .join('') || 'TB'}
                 </Text>
               </View>
             )}
@@ -371,13 +418,17 @@ const KompisApp = ({ userData }) => {
             <View style={styles.profileRating}>
               <Ionicons name="star" size={20} color="#F59E0B" />
               <Text style={styles.profileRatingText}>{userData?.rating || 4.7}</Text>
-              <Text style={styles.profileTrips}>· {userData?.completedJobs || 89} oppdrag fullført</Text>
+              <Text style={styles.profileTrips}>
+                · {userData?.completedJobs || 89} oppdrag fullført
+              </Text>
             </View>
           </View>
 
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <Text style={styles.statValue}>{userData?.totalEarned?.toLocaleString('nb-NO') || '12,450'} kr</Text>
+              <Text style={styles.statValue}>
+                {userData?.totalEarned?.toLocaleString('nb-NO') || '12,450'} kr
+              </Text>
               <Text style={styles.statLabel}>Totalt tjent</Text>
             </View>
             <View style={styles.statCard}>
@@ -427,18 +478,14 @@ const KompisApp = ({ userData }) => {
             <TouchableOpacity
               style={[styles.menuItem, { borderBottomWidth: 0 }]}
               onPress={() => {
-                Alert.alert(
-                  'Logg ut',
-                  'Er du sikker på at du vil logge ut?',
-                  [
-                    { text: 'Avbryt', style: 'cancel' },
-                    {
-                      text: 'Logg ut',
-                      style: 'destructive',
-                      onPress: logout
-                    }
-                  ]
-                );
+                Alert.alert('Logg ut', 'Er du sikker på at du vil logge ut?', [
+                  { text: 'Avbryt', style: 'cancel' },
+                  {
+                    text: 'Logg ut',
+                    style: 'destructive',
+                    onPress: logout,
+                  },
+                ]);
               }}
             >
               <Ionicons name="log-out-outline" size={24} color="#EF4444" />
@@ -460,7 +507,7 @@ const KompisApp = ({ userData }) => {
             colors={['#E8F5E9', '#C8E6C9', '#A5D6A7']}
             style={StyleSheet.absoluteFill}
           />
-          
+
           {/* User location */}
           <View style={[styles.userMarker, { top: '60%', left: '50%' }]}>
             <View style={styles.userDot} />
@@ -487,7 +534,7 @@ const KompisApp = ({ userData }) => {
         {/* Bottom sheet */}
         <View style={styles.activeBottomSheet}>
           <View style={styles.handle} />
-          
+
           <View style={styles.etaBar}>
             <Ionicons name="time" size={24} color="#10B981" />
             <View style={styles.etaInfo}>
@@ -552,16 +599,16 @@ const KompisApp = ({ userData }) => {
             colors={['#E8F5E9', '#C8E6C9', '#A5D6A7']}
             style={StyleSheet.absoluteFill}
           />
-          
+
           {nearbyHelpers.map((helper, index) => (
             <View
               key={helper.id}
               style={[
                 styles.helperMarker,
-                { 
+                {
                   top: `${30 + index * 15}%`,
                   left: `${40 + index * 10}%`,
-                }
+                },
               ]}
             >
               <View style={styles.carIcon}>
@@ -584,18 +631,12 @@ const KompisApp = ({ userData }) => {
             </View>
             <Text style={styles.searchingTitle}>Søker etter hjelper...</Text>
             <Text style={styles.searchingSubtitle}>3 hjelpere i nærheten</Text>
-            
-            <TouchableOpacity 
-              style={styles.foundButton}
-              onPress={() => setStage('active')}
-            >
+
+            <TouchableOpacity style={styles.foundButton} onPress={() => setStage('active')}>
               <Text style={styles.foundButtonText}>Simuler match →</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.cancelSearchButton}
-              onPress={() => setStage('main')}
-            >
+            <TouchableOpacity style={styles.cancelSearchButton} onPress={() => setStage('main')}>
               <Text style={styles.cancelSearchText}>Avbryt</Text>
             </TouchableOpacity>
           </View>
@@ -649,16 +690,16 @@ const KompisApp = ({ userData }) => {
               colors={['#E3F2FD', '#BBDEFB', '#90CAF9']}
               style={StyleSheet.absoluteFill}
             />
-            
+
             {nearbyHelpers.map((helper, index) => (
               <View
                 key={helper.id}
                 style={[
                   styles.helperMarker,
-                  { 
+                  {
                     top: `${25 + index * 20}%`,
                     left: `${35 + index * 15}%`,
-                  }
+                  },
                 ]}
               >
                 <View style={styles.carIcon}>
@@ -684,23 +725,18 @@ const KompisApp = ({ userData }) => {
             </View>
           </View>
 
-          <Animated.View 
-            style={[
-              styles.bottomSheet,
-              { transform: [{ translateY: slideAnim }] }
-            ]}
-          >
-            <TouchableOpacity 
+          <Animated.View style={[styles.bottomSheet, { transform: [{ translateY: slideAnim }] }]}>
+            <TouchableOpacity
               style={styles.handle}
-              onPress={() => slideAnim._value > height * 0.3 ? slideUp() : slideDown()}
+              onPress={() => {
+                // Toggle sheet position
+                slideUp();
+              }}
             />
 
-            <ScrollView 
-              style={styles.bottomContent}
-              scrollEnabled={slideAnim._value < height * 0.3}
-            >
+            <ScrollView style={styles.bottomContent}>
               <Text style={styles.bottomTitle}>Hva trenger du hjelp med?</Text>
-              
+
               <View style={styles.quickActions}>
                 <TouchableOpacity style={styles.quickAction}>
                   <View style={[styles.quickIcon, { backgroundColor: '#FEE2E2' }]}>
@@ -760,7 +796,7 @@ const KompisApp = ({ userData }) => {
                 <Text style={styles.priceAmount}>450 kr</Text>
               </View>
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.requestButton}
                 onPress={() => {
                   slideDown();
@@ -778,9 +814,7 @@ const KompisApp = ({ userData }) => {
                 </LinearGradient>
               </TouchableOpacity>
 
-              <Text style={styles.helpersNearby}>
-                {nearbyHelpers.length} hjelpere i nærheten
-              </Text>
+              <Text style={styles.helpersNearby}>{nearbyHelpers.length} hjelpere i nærheten</Text>
             </ScrollView>
           </Animated.View>
         </>
@@ -798,26 +832,37 @@ const KompisApp = ({ userData }) => {
             </View>
 
             <View style={styles.quickActionsMarket}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickScroll}>
-                {categories.map(cat => (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.quickScroll}
+              >
+                {categories.map((cat) => (
                   <TouchableOpacity
                     key={cat.id}
                     style={[
                       styles.quickActionMarket,
-                      activeFilter === cat.id && { backgroundColor: cat.color, borderColor: cat.color }
+                      activeFilter === cat.id && {
+                        backgroundColor: cat.color,
+                        borderColor: cat.color,
+                      },
                     ]}
                     onPress={() => setActiveFilter(cat.id)}
                   >
-                    <Text style={[
-                      styles.quickEmojiMarket,
-                      activeFilter === cat.id && { transform: [{ scale: 1.2 }] }
-                    ]}>
+                    <Text
+                      style={[
+                        styles.quickEmojiMarket,
+                        activeFilter === cat.id && { transform: [{ scale: 1.2 }] },
+                      ]}
+                    >
                       {cat.emoji}
                     </Text>
-                    <Text style={[
-                      styles.quickTextMarket,
-                      activeFilter === cat.id && { color: '#fff', fontWeight: '600' }
-                    ]}>
+                    <Text
+                      style={[
+                        styles.quickTextMarket,
+                        activeFilter === cat.id && { color: '#fff', fontWeight: '600' },
+                      ]}
+                    >
                       {cat.label}
                     </Text>
                   </TouchableOpacity>
@@ -828,12 +873,10 @@ const KompisApp = ({ userData }) => {
 
           <ScrollView
             style={styles.content}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           >
             <View style={styles.jobsList}>
-              {filteredJobs.map(job => (
+              {filteredJobs.map((job) => (
                 <TouchableOpacity
                   key={job.id}
                   style={styles.jobCard}
@@ -844,14 +887,18 @@ const KompisApp = ({ userData }) => {
                     <View style={styles.jobTop}>
                       <View style={styles.jobCategoryBadge}>
                         <Text style={styles.jobCategoryBadgeText}>
-                          {categories.find(c => c.id === job.category)?.emoji}
+                          {categories.find((c) => c.id === job.category)?.emoji}
                         </Text>
                       </View>
                       <Text style={styles.jobTime}>{job.timeAgo}</Text>
                     </View>
 
-                    <Text style={styles.jobTitle} numberOfLines={1}>{job.title}</Text>
-                    <Text style={styles.jobDescription} numberOfLines={2}>{job.description}</Text>
+                    <Text style={styles.jobTitle} numberOfLines={1}>
+                      {job.title}
+                    </Text>
+                    <Text style={styles.jobDescription} numberOfLines={2}>
+                      {job.description}
+                    </Text>
 
                     <View style={styles.jobFooter}>
                       <View style={styles.jobLocation}>
@@ -876,10 +923,7 @@ const KompisApp = ({ userData }) => {
             </View>
           </ScrollView>
 
-          <TouchableOpacity
-            style={styles.fabButton}
-            onPress={() => setShowNewJob(true)}
-          >
+          <TouchableOpacity style={styles.fabButton} onPress={() => setShowNewJob(true)}>
             <LinearGradient
               colors={['#10B981', '#059669']}
               style={styles.fabGradient}
@@ -1194,7 +1238,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchingOverlay: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1739,7 +1787,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginVertical: 8,
   },
-  locationText: {
+  locationTextContainer: {
     flex: 1,
   },
   locationLabel: {

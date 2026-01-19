@@ -1,18 +1,23 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../contexts/AuthContext';
+import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
 
-const Stack = createStackNavigator();
+export type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return null; // Kunne vist en loading screen her
+    return null;
   }
 
   return (

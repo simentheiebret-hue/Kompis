@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
-const LoginScreen = ({ navigation }) => {
+interface LoginScreenProps {
+  navigation: StackNavigationProp<RootStackParamList, 'Login'>;
+}
+
+const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,7 +69,12 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={20}
+              color="#6B7280"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               placeholder="Passord"
@@ -86,20 +97,14 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.forgotPassword}>Glemt passord?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLogin}
-            disabled={loading}
-          >
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
             <LinearGradient
               colors={['#10B981', '#059669']}
               style={styles.loginGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
-              <Text style={styles.loginButtonText}>
-                {loading ? 'Logger inn...' : 'Logg inn'}
-              </Text>
+              <Text style={styles.loginButtonText}>{loading ? 'Logger inn...' : 'Logg inn'}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -117,9 +122,7 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.demoNote}>
-          Demo: Bruk hvilken som helst e-post og passord
-        </Text>
+        <Text style={styles.demoNote}>Demo: Bruk hvilken som helst e-post og passord</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
