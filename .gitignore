@@ -1,12 +1,35 @@
+# Dependencies
 node_modules/
+
+# Expo
 .expo/
 .expo-shared/
+web-build/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Debug logs
 npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Signing keys
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+
+# Misc
 *.orig.*
-web-build/
 .DS_Store
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+.pnpm-store

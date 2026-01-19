@@ -1,0 +1,17 @@
+services:
+  local:
+    container_name: kompis_local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: local
+    ports:
+      - "2233:80"
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    volumes:
+      - ./..:/kompis
+      - ~/.ssh:/root/.ssh
+    command: bash -c "service ssh start && sleep infinity"

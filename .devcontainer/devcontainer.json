@@ -1,0 +1,17 @@
+{
+  "name": "kompis",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "yoavbls.pretty-ts-errors",
+        "biomejs.biome",
+        "Anthropic.claude-code"
+      ]
+    }
+  },
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "local",
+  "workspaceFolder": "/kompis",
+  "postCreateCommand": "pnpm install && read -p 'Enter your git email: ' email && git config --global user.email \"$email\" && read -p 'Enter your git username: ' username && git config --global user.name \"$username\""
+}

@@ -1,33 +1,33 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { AuthContextValue, AuthProviderProps, AuthResult, User } from '../types';
 
-const AuthContext = createContext({});
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadStoredUser = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadStoredUser();
   }, []);
 
-  const loadStoredUser = async () => {
+  const login = async (email: string, _password: string): Promise<AuthResult> => {
     try {
-      const storedUser = await AsyncStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error('Error loading user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async (email, password) => {
-    try {
-      // Simulert login - i virkeligheten ville du kalle et API her
-      const mockUser = {
+      const mockUser: User = {
         id: '1',
         name: 'Thomas Berg',
         email: email,
@@ -49,10 +49,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, phone) => {
+  const register = async (
+    name: string,
+    email: string,
+    _password: string,
+    phone: string
+  ): Promise<AuthResult> => {
     try {
-      // Simulert registrering - i virkeligheten ville du kalle et API her
-      const newUser = {
+      const newUser: User = {
         id: Date.now().toString(),
         name,
         email,
@@ -74,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       await AsyncStorage.removeItem('user');
       setUser(null);
@@ -83,9 +87,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUser = async (updates) => {
+  const updateUser = async (updates: Partial<User>): Promise<AuthResult> => {
     try {
-      const updatedUser = { ...user, ...updates };
+      const updatedUser = { ...user, ...updates } as User;
       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
       return { success: true };
@@ -112,7 +116,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');

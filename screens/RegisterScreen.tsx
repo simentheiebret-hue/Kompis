@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
-const RegisterScreen = ({ navigation }) => {
+interface RegisterScreenProps {
+  navigation: StackNavigationProp<RootStackParamList, 'Register'>;
+}
+
+const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -55,10 +61,7 @@ const RegisterScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
 
@@ -107,7 +110,12 @@ const RegisterScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={20}
+              color="#6B7280"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               placeholder="Passord (min. 6 tegn)"
@@ -127,7 +135,12 @@ const RegisterScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+            <Ionicons
+              name="lock-closed-outline"
+              size={20}
+              color="#6B7280"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               placeholder="Bekreft passord"
@@ -164,9 +177,7 @@ const RegisterScreen = ({ navigation }) => {
           </View>
         </View>
 
-        <Text style={styles.terms}>
-          Ved å registrere deg godtar du våre vilkår og betingelser
-        </Text>
+        <Text style={styles.terms}>Ved å registrere deg godtar du våre vilkår og betingelser</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

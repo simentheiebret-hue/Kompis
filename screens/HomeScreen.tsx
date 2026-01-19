@@ -1,6 +1,5 @@
-import React from 'react';
-import KompisApp from '../KompisApp';
 import { useAuth } from '../contexts/AuthContext';
+import KompisApp from '../KompisApp';
 
 const HomeScreen = () => {
   const { user } = useAuth();
